@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUARDIÁN DE RACHA - ELITE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --text-color: #f0f0f0;
+            --neon-yellow: #DFFF00;
+            --neon-red: #FF003C;
+            --neon-cyan: #00F0FF;
+            --font-main: 'Space Grotesk', system-ui, sans-serif;
+            --shadow-hard: 8px 8px 0px rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0;
+            animation: moveBg 20s linear infinite;
+            padding: 2rem 0;
+        }
+
+        @keyframes moveBg {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            width: 95%;
+            padding: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 15px 15px 0px var(--neon-cyan);
+            position: relative;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* --- LEFT PANEL: VISUALS --- */
+        .panel-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 2px dashed #333;
+            padding-right: 2rem;
+            position: relative;
+        }
+
+        @media (max-width: 900px) {
+            .panel-left { border-right: none; border-bottom: 2px dashed #333; padding-right: 0; padding-bottom: 2rem; }
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            text-shadow: 4px 4px 0px var(--neon-red);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .streak-container { position: relative; }
+
+        .streak-number {
+            font-size: 15rem;
+            font-weight: 900;
+            line-height: 0.8;
+            color: var(--neon-yellow);
+            text-shadow: 8px 8px 0px var(--neon-red), -4px -4px 0px var(--neon-cyan);
+            position: relative;
+            z-index: 2;
+        }
+
+        .streak-number.glitch { animation: glitch-anim 0.2s cubic-bezier(.25, .46, .45, .94) both infinite; }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-5px, 5px) }
+            40% { transform: translate(-5px, -5px) }
+            60% { transform: translate(5px, 5px) }
+            80% { transform: translate(5px, -5px) }
+            100% { transform: translate(0) }
+        }
+
+        .streak-label {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* --- RIGHT PANEL: CONTROLS --- */
+        .panel-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
+        button {
+            font-family: var(--font-main);
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 1.5rem;
+            cursor: pointer;
+            border: 4px solid var(--text-color);
+            background: #000;
+            color: var(--text-color);
+            transition: all 0.1s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        button::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.2); transform: skewX(-45deg); transition: 0.5s;
+        }
+        button:hover::before { left: 200%; }
+
+        .btn-gym {
+            background-color: var(--neon-yellow);
+            color: #000;
+            border-color: var(--neon-yellow);
+            box-shadow: 8px 8px 0px var(--text-color);
+            font-size: 1.8rem;
+        }
+        .btn-gym:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0px var(--text-color) !important; }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+            box-shadow: 8px 8px 0px var(--neon-red);
+            font-size: 1.2rem;
+            padding: 1rem;
+        }
+        .btn-danger:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0px var(--neon-red) !important; }
+
+        .btn-motivate {
+            background-color: transparent;
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 8px 8px 0px var(--neon-cyan);
+            font-size: 1.5rem;
+            width: 100%;
+        }
+        .btn-motivate:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0px var(--neon-cyan) !important; }
+
+        select {
+            padding: 1rem;
+            font-family: var(--font-main);
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #111;
+            color: var(--text-color);
+            border: 2px solid #555;
+            text-transform: uppercase;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        select:focus { border-color: var(--neon-cyan); }
+
+        .motivation-box {
+            padding: 1.5rem;
+            border: 2px solid #555;
+            background: #0a0a0a;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .motivation-box::after {
+            content: ''; position: absolute; top: 5px; left: 5px; right: -5px; bottom: -5px;
+            border: 2px dashed #333; pointer-events: none;
+        }
+
+        .motivation-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--neon-yellow);
+            text-shadow: 1px 1px 5px rgba(223, 255, 0, 0.3);
+            text-align: center;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--neon-yellow);
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 5px;
+        }
+
+        /* CALENDAR CSS */
+        .calendar-wrapper {
+            border: 2px solid #333;
+            padding: 1.5rem;
+            background: #000;
+            width: 100%;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 2px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-day-name {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #555;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .calendar-date {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #222;
+            background: #111;
+            color: #555;
+            font-weight: 900;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .calendar-date.active {
+            background: var(--neon-yellow);
+            border-color: var(--neon-yellow);
+            color: #000;
+            box-shadow: 0 0 10px rgba(223, 255, 0, 0.5);
+        }
+        .calendar-date.today {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .calendar-date.empty {
+            background: transparent;
+            border: none;
+        }
+
+        /* PARTICLES CANVAS */
+        #confettiCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 100;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="dashboard" id="dashboard">
+        <div class="panel-left">
+            <h1 class="title">GUARDIÁN<br>DE RACHA</h1>
+            
+            <div class="streak-container">
+                <div class="streak-number" id="streakCounter">0</div>
+                <div class="streak-label">DÍAS INVICTO</div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            
+            <div class="action-buttons">
+                <button class="btn-gym" id="btnGym">¡SUDÉ SANGRE HOY!</button>
+                <button class="btn-danger" id="btnBreak">ROMPÍ<br>LA RACHA</button>
+            </div>
+            
+            <select id="moodSelect">
+                <option value="Destruido">ESTADO: DESTRUIDO</option>
+                <option value="Con excusas">ESTADO: CON EXCUSAS</option>
+                <option value="Invencible">ESTADO: INVENCIBLE</option>
+                <option value="Sin tiempo">ESTADO: SIN TIEMPO</option>
+            </select>
+
+            <button class="btn-motivate" id="btnMotivate">EXIJO MOTIVACIÓN</button>
+
+            <div class="motivation-box">
+                <div class="motivation-text">
+                    <span id="motivationText">EL DOLOR ES TEMPORAL. LA RACHA ES ETERNA.</span><span class="cursor" id="cursor"></span>
+                </div>
+            </div>
+
+            <div class="calendar-wrapper">
+                <div class="calendar-header">
+                    <span id="calendarMonthYear">MAYO 2026</span>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /** ==========================================
+         *  CORE LOGIC & CONSTANTS
+         *  ========================================== */
+        const THRESHOLD_HOURS = 36;
+        const THRESHOLD_MS = THRESHOLD_HOURS * 60 * 60 * 1000;
+        const API_URL = 'http://localhost:3000/api/motivate';
+
+        // Elements
+        const elStreak = document.getElementById('streakCounter');
+        const elMotivText = document.getElementById('motivationText');
+        const elBtnGym = document.getElementById('btnGym');
+        const elBtnBreak = document.getElementById('btnBreak');
+        const elBtnMotiv = document.getElementById('btnMotivate');
+        const elMood = document.getElementById('moodSelect');
+        const elCalendarGrid = document.getElementById('calendarGrid');
+        const elCalendarMonthYear = document.getElementById('calendarMonthYear');
+        
+        /** ==========================================
+         *  WEB AUDIO API (SYNTHESIZER)
+         *  ========================================== */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playKick() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playBlip() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800 + Math.random()*400, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playError() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        /** ==========================================
+         *  STREAK & CALENDAR MANAGEMENT
+         *  ========================================== */
+        // Retrieve dates from localStorage
+        function getGymDates() {
+            return JSON.parse(localStorage.getItem('gym_dates')) || [];
+        }
+
+        function addGymDate(dateString) {
+            let dates = getGymDates();
+            if (!dates.includes(dateString)) {
+                dates.push(dateString);
+                localStorage.setItem('gym_dates', JSON.stringify(dates));
+            }
+        }
+
+        function getStreakData() {
+            return {
+                streak: parseInt(localStorage.getItem('gym_streak')) || 0,
+                lastVisit: parseInt(localStorage.getItem('gym_last_visit')) || 0
+            };
+        }
+
+        function saveStreakData(streak, lastVisit) {
+            localStorage.setItem('gym_streak', streak);
+            localStorage.setItem('gym_last_visit', lastVisit);
+            renderCalendar();
+        }
+
+        function getISODateStr(date) {
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+        }
+
+        function updateState() {
+            const { streak, lastVisit } = getStreakData();
+            const now = Date.now();
+            let currentStreak = streak;
+
+            if (streak > 0 && lastVisit > 0) {
+                const elapsed = now - lastVisit;
+                if (elapsed > THRESHOLD_MS) {
+                    // DEAD STREAK (Timeout)
+                    currentStreak = 0;
+                    saveStreakData(0, 0);
+                    playError();
+                    typeWriter("TU RACHA HA MUERTO DE INACTIVIDAD.");
+                }
+            }
+
+            if (elStreak.textContent !== currentStreak.toString()) {
+                elStreak.classList.add('glitch');
+                setTimeout(() => elStreak.classList.remove('glitch'), 500);
+            }
+            elStreak.textContent = currentStreak;
+            renderCalendar();
+            return currentStreak;
+        }
+
+        function hitGym() {
+            playKick();
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            fireConfetti();
+            
+            let { streak } = getStreakData();
+            const now = Date.now();
+            const nowDate = new Date(now);
+            const { lastVisit } = getStreakData();
+            
+            if (streak > 0 && lastVisit > 0 && (now - lastVisit > THRESHOLD_MS)) {
+                streak = 0; // reset first
+            }
+            
+            // Avoid double counting if pressed multiple times same day (optional logic, but let's increment if it's a valid visit)
+            // But we must record the date.
+            addGymDate(getISODateStr(nowDate));
+            
+            streak++;
+            saveStreakData(streak, now);
+            updateState();
+            typeWriter("¡SANGRE Y HIERRO! LA RACHA CRECE.");
+        }
+
+        function breakStreak() {
+            playError();
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+            saveStreakData(0, 0);
+            updateState();
+            typeWriter("HAS SIDO DÉBIL. TU RACHA VUELVE A CERO. LA VERGÜENZA ES TUYA.");
+        }
+
+        /** ==========================================
+         *  CALENDAR RENDER LOGIC
+         *  ========================================== */
+        function renderCalendar() {
+            elCalendarGrid.innerHTML = '';
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const todayStr = getISODateStr(today);
+            const gymDates = getGymDates();
+
+            const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            elCalendarMonthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            dayNames.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'calendar-day-name';
+                el.textContent = d;
+                elCalendarGrid.appendChild(el);
+            });
+
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            
+            // JS getDay() is 0=Sun, 1=Mon... we want 1=Mon, 7=Sun
+            let startDayOfWeek = firstDay.getDay() === 0 ? 7 : firstDay.getDay();
+
+            // Empty cells before start of month
+            for (let i = 1; i < startDayOfWeek; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-date empty';
+                elCalendarGrid.appendChild(empty);
+            }
+
+            // Days of the month
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+                const dateObj = new Date(currentYear, currentMonth, d);
+                const dateStr = getISODateStr(dateObj);
+                
+                const cell = document.createElement('div');
+                cell.className = 'calendar-date';
+                cell.textContent = d;
+
+                if (gymDates.includes(dateStr)) {
+                    cell.classList.add('active');
+                }
+                
+                if (dateStr === todayStr && !gymDates.includes(dateStr)) {
+                    cell.classList.add('today');
+                }
+
+                elCalendarGrid.appendChild(cell);
+            }
+        }
+
+        /** ==========================================
+         *  TYPEWRITER EFFECT & AI
+         *  ========================================== */
+        let typeTimeout;
+        function typeWriter(text, i = 0) {
+            if (i === 0) {
+                clearTimeout(typeTimeout);
+                elMotivText.textContent = '';
+                elBtnMotiv.disabled = true;
+            }
+            if (i < text.length) {
+                elMotivText.textContent += text.charAt(i);
+                if (i % 3 === 0) playBlip(); 
+                typeTimeout = setTimeout(() => typeWriter(text, i + 1), 30);
+            } else {
+                elBtnMotiv.disabled = false;
+            }
+        }
+
+        function getTimeOfDay() {
+            const h = new Date().getHours();
+            if (h >= 5 && h < 12) return "Mañana";
+            if (h >= 12 && h < 18) return "Tarde";
+            if (h >= 18 && h < 22) return "Noche/Salida trabajo";
+            return "Madrugada";
+        }
+
+        async function fetchMotivation() {
+            const currentStreak = updateState();
+            typeWriter("CONECTANDO CON EL GUARDIÁN...");
+            elBtnMotiv.disabled = true;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        racha_actual: currentStreak,
+                        estado_animo_usuario: elMood.value,
+                        momento_del_dia: getTimeOfDay()
+                    })
+                });
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                setTimeout(() => typeWriter(data.message.toUpperCase()), 500);
+            } catch (error) {
+                setTimeout(() => {
+                    const fallbacks = [
+                        `¿"${elMood.value.toUpperCase()}"? LAS EXCUSAS NO CONSTRUYEN MÚSCULO. TIENES ${currentStreak} DÍAS, NO LOS TIRES A LA BASURA.`,
+                        `EL DOLOR ES TEMPORAL, LA VERGÜENZA DE ROMPER TUS ${currentStreak} DÍAS DE RACHA ES ETERNA. MUEVE EL CULO.`,
+                        `EL GUARDIÁN NO CONECTA, PERO TE VIGILA. LEVÁNTATE. AHORA.`,
+                    ];
+                    const msg = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                    typeWriter(`(OFFLINE) ${msg}`);
+                }, 800);
+            }
+        }
+
+        /** ==========================================
+         *  CANVAS: PARTICLES (CONFETTI GLITCH)
+         *  ========================================== */
+        const confCanvas = document.getElementById('confettiCanvas');
+        const cCtx = confCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeConfetti() {
+            confCanvas.width = window.innerWidth;
+            confCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfetti);
+        resizeConfetti();
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.vx = (Math.random() - 0.5) * 20;
+                this.vy = (Math.random() - 1) * 20;
+                this.size = Math.random() * 15 + 5;
+                this.color = Math.random() > 0.5 ? '#DFFF00' : '#FF003C';
+                this.life = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.5; // gravity
+                this.life -= this.decay;
+            }
+            draw() {
+                cCtx.fillStyle = this.color;
+                cCtx.globalAlpha = this.life;
+                cCtx.fillRect(this.x, this.y, this.size, this.size);
+                cCtx.globalAlpha = 1;
+            }
+        }
+
+        function fireConfetti() {
+            const rect = elBtnGym.getBoundingClientRect();
+            const startX = rect.left + rect.width/2;
+            const startY = rect.top + rect.height/2;
+            for(let i=0; i<50; i++) particles.push(new Particle(startX, startY));
+        }
+
+        function animateConfetti() {
+            cCtx.clearRect(0,0, confCanvas.width, confCanvas.height);
+            particles = particles.filter(p => p.life > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateConfetti);
+        }
+        animateConfetti();
+
+        /** ==========================================
+         *  INITIALIZATION & 3D HOVER EFFECT
+         *  ========================================== */
+        elBtnGym.addEventListener('click', hitGym);
+        elBtnBreak.addEventListener('click', breakStreak);
+        elBtnMotiv.addEventListener('click', fetchMotivation);
+        
+        setInterval(updateState, 60000);
+        updateState();
+
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xAxis = (rect.width / 2 - x) / 10;
+                const yAxis = (rect.height / 2 - y) / 10;
+                btn.style.transform = `perspective(500px) rotateY(${-xAxis}deg) rotateX(${yAxis}deg) scale(1.05)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = `perspective(500px) rotateY(0deg) rotateX(0deg) scale(1)`;
+            });
+        });
+
+        document.body.addEventListener('click', () => {
+            if(!audioCtx) initAudio();
+        }, { once: true });
+
+    </script>
+</body>
+</html>
