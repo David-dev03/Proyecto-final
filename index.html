@@ -420,11 +420,19 @@
         /** ==========================================
          *  STREAK & CALENDAR MANAGEMENT
          *  ========================================== */
-        // Retrieve dates from localStorage
+        
+        /**
+         * Retrieves the list of dates the user visited the gym from localStorage.
+         * @returns {string[]} Array of date strings in ISO format (YYYY-MM-DD).
+         */
         function getGymDates() {
             return JSON.parse(localStorage.getItem('gym_dates')) || [];
         }
 
+        /**
+         * Adds a new gym visit date to localStorage if it doesn't already exist.
+         * @param {string} dateString - Date string in ISO format (YYYY-MM-DD).
+         */
         function addGymDate(dateString) {
             let dates = getGymDates();
             if (!dates.includes(dateString)) {
@@ -433,6 +441,10 @@
             }
         }
 
+        /**
+         * Retrieves current streak and last visit timestamp from localStorage.
+         * @returns {Object} Object containing {streak, lastVisit}.
+         */
         function getStreakData() {
             return {
                 streak: parseInt(localStorage.getItem('gym_streak')) || 0,
@@ -440,16 +452,30 @@
             };
         }
 
+        /**
+         * Saves streak data to localStorage and triggers calendar re-render.
+         * @param {number} streak - Number of consecutive days.
+         * @param {number} lastVisit - Timestamp of the last visit.
+         */
         function saveStreakData(streak, lastVisit) {
             localStorage.setItem('gym_streak', streak);
             localStorage.setItem('gym_last_visit', lastVisit);
             renderCalendar();
         }
 
+        /**
+         * Converts a Date object to an ISO date string (YYYY-MM-DD).
+         * @param {Date} date - The date to convert.
+         * @returns {string} Formatted date string.
+         */
         function getISODateStr(date) {
             return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
         }
 
+        /**
+         * Updates the UI state, checks for streak expiration, and handles glitch effects.
+         * @returns {number} The current validated streak.
+         */
         function updateState() {
             const { streak, lastVisit } = getStreakData();
             const now = Date.now();
@@ -475,6 +501,9 @@
             return currentStreak;
         }
 
+        /**
+         * Handles the "Hit Gym" action. Increments streak, plays audio/visual feedback, and saves data.
+         */
         function hitGym() {
             playKick();
             if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
@@ -489,8 +518,6 @@
                 streak = 0; // reset first
             }
             
-            // Avoid double counting if pressed multiple times same day (optional logic, but let's increment if it's a valid visit)
-            // But we must record the date.
             addGymDate(getISODateStr(nowDate));
             
             streak++;
@@ -499,6 +526,9 @@
             typeWriter("¡SANGRE Y HIERRO! LA RACHA CRECE.");
         }
 
+        /**
+         * Resets the streak to zero and provides negative feedback.
+         */
         function breakStreak() {
             playError();
             if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
@@ -510,6 +540,10 @@
         /** ==========================================
          *  CALENDAR RENDER LOGIC
          *  ========================================== */
+        
+        /**
+         * Renders the interactive calendar grid based on current month and recorded gym visits.
+         */
         function renderCalendar() {
             elCalendarGrid.innerHTML = '';
             const today = new Date();
@@ -532,17 +566,14 @@
             const firstDay = new Date(currentYear, currentMonth, 1);
             const lastDay = new Date(currentYear, currentMonth + 1, 0);
             
-            // JS getDay() is 0=Sun, 1=Mon... we want 1=Mon, 7=Sun
             let startDayOfWeek = firstDay.getDay() === 0 ? 7 : firstDay.getDay();
 
-            // Empty cells before start of month
             for (let i = 1; i < startDayOfWeek; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'calendar-date empty';
                 elCalendarGrid.appendChild(empty);
             }
 
-            // Days of the month
             for (let d = 1; d <= lastDay.getDate(); d++) {
                 const dateObj = new Date(currentYear, currentMonth, d);
                 const dateStr = getISODateStr(dateObj);
@@ -566,6 +597,12 @@
         /** ==========================================
          *  TYPEWRITER EFFECT & AI
          *  ========================================== */
+        
+        /**
+         * Simulates a typewriter effect for motivational messages.
+         * @param {string} text - The message to type.
+         * @param {number} [i=0] - Current character index.
+         */
         let typeTimeout;
         function typeWriter(text, i = 0) {
             if (i === 0) {
@@ -582,6 +619,10 @@
             }
         }
 
+        /**
+         * Determines the current category of time based on local system time.
+         * @returns {string} "Mañana", "Tarde", "Noche/Salida trabajo" or "Madrugada".
+         */
         function getTimeOfDay() {
             const h = new Date().getHours();
             if (h >= 5 && h < 12) return "Mañana";
@@ -590,6 +631,10 @@
             return "Madrugada";
         }
 
+        /**
+         * Fetches a motivational message from the backend API.
+         * Handles loading states, success, and fallback messages for offline/error modes.
+         */
         async function fetchMotivation() {
             const moodVal = elMood.value.trim();
             
