@@ -1,1 +1,3 @@
-# Proyecto-final
+# Guardián de Racha
+
+El "Guardián de Racha" es una aplicación web de una sola página diseñada con una estética neo-brutalista para motivar agresivamente a los usuarios a no romper su racha de gimnasio. Funciona guardando el progreso y las fechas en el `localStorage` del navegador. Para arrancar el proyecto, debes ejecutar `npm install` y luego `node server.js` para levantar el backend proxy, el cual lee la clave de la IA de un archivo `.env` (asegurando que la API Key no exponga en el frontend) y finalmente abrir el archivo `index.html` en el navegador. Como límites conocidos: al depender de `localStorage`, si el usuario borra los datos del navegador o cambia de dispositivo, perderá su racha, y si el servidor Node.js no está en ejecución, la app recurrirá a un modo de simulación offline usando frases predefinidas.

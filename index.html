@@ -182,7 +182,7 @@
         }
         .btn-motivate:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0px var(--neon-cyan) !important; }
 
-        select {
+        input[type="text"] {
             padding: 1rem;
             font-family: var(--font-main);
             font-size: 1.2rem;
@@ -192,10 +192,9 @@
             border: 2px solid #555;
             text-transform: uppercase;
             outline: none;
-            cursor: pointer;
             width: 100%;
         }
-        select:focus { border-color: var(--neon-cyan); }
+        input[type="text"]:focus { border-color: var(--neon-cyan); }
 
         .motivation-box {
             padding: 1.5rem;
@@ -318,12 +317,7 @@
                 <button class="btn-danger" id="btnBreak">ROMPÍ<br>LA RACHA</button>
             </div>
             
-            <select id="moodSelect">
-                <option value="Destruido">ESTADO: DESTRUIDO</option>
-                <option value="Con excusas">ESTADO: CON EXCUSAS</option>
-                <option value="Invencible">ESTADO: INVENCIBLE</option>
-                <option value="Sin tiempo">ESTADO: SIN TIEMPO</option>
-            </select>
+            <input type="text" id="moodInput" placeholder="¿CUÁL ES TU EXCUSA? (MÁX 100 CARACTERES)" maxlength="100">
 
             <button class="btn-motivate" id="btnMotivate">EXIJO MOTIVACIÓN</button>
 
@@ -358,7 +352,7 @@
         const elBtnGym = document.getElementById('btnGym');
         const elBtnBreak = document.getElementById('btnBreak');
         const elBtnMotiv = document.getElementById('btnMotivate');
-        const elMood = document.getElementById('moodSelect');
+        const elMood = document.getElementById('moodInput');
         const elCalendarGrid = document.getElementById('calendarGrid');
         const elCalendarMonthYear = document.getElementById('calendarMonthYear');
         
@@ -597,6 +591,20 @@
         }
 
         async function fetchMotivation() {
+            const moodVal = elMood.value.trim();
+            
+            // VALIDACIÓN DEL INPUT (Checklist Punto 1)
+            if (!moodVal) {
+                playError();
+                typeWriter("ERROR: EL CAMPO NO PUEDE ESTAR VACÍO. ESCRIBE ALGO.");
+                return;
+            }
+            if (moodVal.length > 100) {
+                playError();
+                typeWriter("ERROR: NO SEAS PESADO. MÁXIMO 100 CARACTERES.");
+                return;
+            }
+
             const currentStreak = updateState();
             typeWriter("CONECTANDO CON EL GUARDIÁN...");
             elBtnMotiv.disabled = true;
@@ -607,7 +615,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         racha_actual: currentStreak,
-                        estado_animo_usuario: elMood.value,
+                        estado_animo_usuario: moodVal,
                         momento_del_dia: getTimeOfDay()
                     })
                 });
@@ -617,7 +625,7 @@
             } catch (error) {
                 setTimeout(() => {
                     const fallbacks = [
-                        `¿"${elMood.value.toUpperCase()}"? LAS EXCUSAS NO CONSTRUYEN MÚSCULO. TIENES ${currentStreak} DÍAS, NO LOS TIRES A LA BASURA.`,
+                        `¿"${moodVal.toUpperCase()}"? LAS EXCUSAS NO CONSTRUYEN MÚSCULO. TIENES ${currentStreak} DÍAS, NO LOS TIRES A LA BASURA.`,
                         `EL DOLOR ES TEMPORAL, LA VERGÜENZA DE ROMPER TUS ${currentStreak} DÍAS DE RACHA ES ETERNA. MUEVE EL CULO.`,
                         `EL GUARDIÁN NO CONECTA, PERO TE VIGILA. LEVÁNTATE. AHORA.`,
                     ];
